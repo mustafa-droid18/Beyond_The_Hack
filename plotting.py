@@ -16,6 +16,18 @@ def count_merchant_types(transactions_log):
     """
     return transactions_log['merchant_category'].value_counts()
 
+def count_merchant_id(transactions_log):
+    """
+    Count the occurrences of each 'Merchant Type'.
+
+    Parameters:
+    transactions_log (pd.DataFrame): DataFrame containing transactions log.
+
+    Returns:
+    pd.Series: Series containing the count of each merchant type.
+    """
+    return transactions_log['merchant_id'].value_counts()
+
 def filter_agent_data(agent_id, transactions_log, account_state_log):
     """
     Filter data for the specified agent.
@@ -90,6 +102,25 @@ def plot_merchant_type_distribution(transactions_log):
     merchant_type_counts.plot(kind='bar')  # Creates a bar chart
     plt.title('Distribution of Merchant Types')
     plt.xlabel('Merchant Type')
+    plt.ylabel('Frequency')
+    plt.xticks(rotation=45, ha="right")  # Rotate the x-axis labels for better readability
+    plt.tight_layout(pad=3)  # Adjust the layout to make room for the rotated labels
+    plt.show()
+
+def plot_merchant_id_distribution(transactions_log):
+    """
+    Plot the distribution of 'Merchant Type'.
+
+    Parameters:
+    transactions_log (pd.DataFrame): DataFrame containing transactions log.
+    """
+
+    merchant_id_counts = count_merchant_id(transactions_log)
+
+    plt.figure(figsize=(10, 6))
+    merchant_id_counts.plot(kind='bar')  # Creates a bar chart
+    plt.title('Distribution of Merchant IDs')
+    plt.xlabel('Merchant ID')
     plt.ylabel('Frequency')
     plt.xticks(rotation=45, ha="right")  # Rotate the x-axis labels for better readability
     plt.tight_layout(pad=3)  # Adjust the layout to make room for the rotated labels
