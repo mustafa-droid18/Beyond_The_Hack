@@ -24,7 +24,7 @@ def main(test_set_dir: str, results_dir: str):
     #  guess with that percentage.
     # load the model
     bst = xgb.Booster()
-    bst.load_model('./xgboost_model.json')
+    bst.load_model('./xgboost_model_second.json')
     co_percent = 0.3
     agents = list(set(account_state_df.agent_id).union(set(payments_df.agent_id)).union(set(transactions_df.agent_id)))
     col_names = {months: f"charge_off_within_{months}_months" for months in PREDICTION_WINDOW_MONTHS}
@@ -38,7 +38,15 @@ def main(test_set_dir: str, results_dir: str):
         )
         # When unsure of whether their predictions span the entire set of agents to predict
         #  for, the true data scientist pads their predictions with zeros lol.
-        preds = bst.predict(account_state_df.drop(columns=['agent_id', 'charge_off_within_3_months', 'charge_off_within_6_months', 'charge_off_within_9_months', 'charge_off_within_12_months', 'timestamp']))
+        preds = bst.predict(account_state_df.drop(columns=['agent_id', 'timestamp']))
+        if months == 3:
+            preds = np.where(preds == 1, 1, 0)
+        elif months == 6:
+            preds = np.where(preds <= 2, 1, 0)
+        elif months == 9:
+            preds = np.where(preds <= 3, 1, 0)
+        elif months == 12:
+            preds = np.where(preds <= 4, 1, 0)
         #preds = np.append(preds, [0]*(len(agents) - len(preds)))
         np.random.shuffle(preds)
         output_df[col_name] = preds
